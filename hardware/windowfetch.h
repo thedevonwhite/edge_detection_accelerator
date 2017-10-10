@@ -1,9 +1,6 @@
 /**
  * @file windowfetch.h
- * @date Tuesday, November 1, 2016 at 05:29:10 PM EDT
- * @author Brandon Perez (bmperez)
  * @author Devon White (dww)
- * @author Yiyi Zhang (yiyiz)
  *
  * @bug No known bugs.
  **/

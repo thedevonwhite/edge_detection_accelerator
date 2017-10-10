@@ -3,7 +3,6 @@
  * @date Sunday, October 30, 2016 at 04:59:10 PM EDT
  * @author Brandon Perez (bmperez)
  * @author Devon White (dww)
- * @author Yiyi Zhang (yiyiz)
  *
  * This file contains the interface to the grayscale module.
  *

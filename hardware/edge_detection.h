@@ -28,7 +28,7 @@
  * The dimensions of the sobel compass filter. This also determines the
  * size of the window operated on in the image.
  **/
-static const int EDGE_FILTER_WIDTH = 5;
+static const int EDGE_FILTER_WIDTH = 3;
 static const int EDGE_FILTER_HEIGHT = EDGE_FILTER_WIDTH;
 
 /**
@@ -94,11 +94,11 @@ void edge_detection(grayscale_stream_t& grayscale_stream,
 #pragma HLS INLINE
 
     // Declare a window object
-    window_pipeline<grayscale_t, edge_detection_t, 1, 1, IMAGE_HEIGHT,
+    window_pipeline<grayscale_t, edge_detection_t, 8, 1, IMAGE_HEIGHT,
             IMAGE_WIDTH, EDGE_FILTER_HEIGHT, EDGE_FILTER_WIDTH,
             compute_edge_detection> w;
 
-    // Apply the LoG operation
+    // Apply the Edge Det operation
     w.window_op(grayscale_stream, edge_detection_stream);
     return;
 }

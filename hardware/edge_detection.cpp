@@ -14,8 +14,8 @@
 #include <ap_int.h>                 //Arbitrary precision integers
 
 #include "axis.h"                   // Definition of the AXIS protocol structure
-#include "grayscale.h"             // Definition of the grascale types
-#include "blob_detection.h"         // Our interface and blob detection types
+#include "grayscale.h"             // Definition of the grayscale types
+#include "edge_detection.h"         // Our interface and edge detection types
 #include "windowfetch.h"            // Our implementation of window operation
 #include "image.h"                  // Definition of image info
 #include "filters.h"
@@ -37,7 +37,7 @@ static const edge_detection_response_t EDGE_THRESHOLD = 500;
  *----------------------------------------------------------------------------*/
 
 /**
- * Decides if the given window in the image corresponds a blob detection.
+ * Decides if the given window in the image corresponds an edge detection.
  *
  * This computes the response to the 4 different Sobel Compass filters, and
  * compares them (as well as their absolute values, corresponding to an edge
@@ -45,9 +45,9 @@ static const edge_detection_response_t EDGE_THRESHOLD = 500;
  * threshold, an edge is detected and 1 is returned.
  *
  * @param[in] window A window of monochrome values from an image.
- * @return 1 if the window corresponds to a blob, 0 otherwise.
+ * @return 1 if the window corresponds to a edge, 0 otherwise.
  **/
-blob_detection_t compute_blob_detection(monochrome_window_t window,
+edge_detection_t compute_edge_detection(grayscale_window_t window,
         int start_row, int start_col) {
 #pragma HLS INLINE
 
@@ -55,12 +55,12 @@ blob_detection_t compute_blob_detection(monochrome_window_t window,
     edge_detection_response_t response1 = 0;
     edge_detection_response_t response2 = 0;
     edge_detection_response_t response3 = 0;
-    edge_detect_row: for(int i = 0; i < BLOB_FILTER_HEIGHT ; i++) {
-        edge_detect_col: for(int j = 0; j < BLOB_FILTER_WIDTH; j++) {
-            int row = (start_row + i < BLOB_FILTER_HEIGHT) ? start_row + i
-                    : start_row + i - BLOB_FILTER_HEIGHT;
-            int col = (start_col + j < BLOB_FILTER_WIDTH) ? start_col + j
-                    : start_col + j - BLOB_FILTER_WIDTH;
+    edge_detect_row: for(int i = 0; i < EDGE_FILTER_HEIGHT ; i++) {
+        edge_detect_col: for(int j = 0; j < EDGE_FILTER_WIDTH; j++) {
+            int row = (start_row + i < EDGE_FILTER_HEIGHT) ? start_row + i
+                    : start_row + i - EDGE_FILTER_HEIGHT;
+            int col = (start_col + j < EDGE_FILTER_WIDTH) ? start_col + j
+                    : start_col + j - EDGE_FILTER_WIDTH;
             response0 += window[row][col] * SOBEL_FILTER_0[i][j];
             response1 += window[row][col] * SOBEL_FILTER_1[i][j];
             response2 += window[row][col] * SOBEL_FILTER_2[i][j];
@@ -68,10 +68,10 @@ blob_detection_t compute_blob_detection(monochrome_window_t window,
         }
     }
 
-    return response0 >= EDGE_THRESHOLD || abs(response0) >= EDGE_THRESHOLD ||
-    	   response1 >= EDGE_THRESHOLD || abs(response1) >= EDGE_THRESHOLD ||
-		   response2 >= EDGE_THRESHOLD || abs(response2) >= EDGE_THRESHOLD ||
-		   response3 >= EDGE_THRESHOLD || abs(response3) >= EDGE_THRESHOLD;
+    return response0 >= EDGE_THRESHOLD || (~response0 + 1) >= EDGE_THRESHOLD ||
+    	   response1 >= EDGE_THRESHOLD || (~response1 + 1) >= EDGE_THRESHOLD ||
+		   response2 >= EDGE_THRESHOLD || (~response2 + 1) >= EDGE_THRESHOLD ||
+		   response3 >= EDGE_THRESHOLD || (~response3 + 1) >= EDGE_THRESHOLD;
 }
 
 /*----------------------------------------------------------------------------
