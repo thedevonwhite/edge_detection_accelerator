@@ -49,22 +49,29 @@ static const edge_detection_response_t EDGE_THRESHOLD = 500;
  **/
 edge_detection_t compute_edge_detection(grayscale_window_t window,
         int start_row, int start_col) {
-#pragma HLS INLINE
+	#pragma HLS INLINE
+	#pragma HLS DEPENDENCE variable=window inter RAW false
 
     edge_detection_response_t response0 = 0;
     edge_detection_response_t response1 = 0;
     edge_detection_response_t response2 = 0;
     edge_detection_response_t response3 = 0;
     edge_detect_row: for(int i = 0; i < EDGE_FILTER_HEIGHT ; i++) {
+    #pragma HLS UNROLL
         edge_detect_col: for(int j = 0; j < EDGE_FILTER_WIDTH; j++) {
             int row = (start_row + i < EDGE_FILTER_HEIGHT) ? start_row + i
                     : start_row + i - EDGE_FILTER_HEIGHT;
             int col = (start_col + j < EDGE_FILTER_WIDTH) ? start_col + j
                     : start_col + j - EDGE_FILTER_WIDTH;
-            response0 += window[row][col] * SOBEL_FILTER_0[i][j];
-            response1 += window[row][col] * SOBEL_FILTER_1[i][j];
-            response2 += window[row][col] * SOBEL_FILTER_2[i][j];
-            response3 += window[row][col] * SOBEL_FILTER_3[i][j];
+            grayscale_t window_val = window[row][col];
+            edge_detection_response_t filter0_val = SOBEL_FILTER_0[i][j];
+            edge_detection_response_t filter1_val = SOBEL_FILTER_1[i][j];
+            edge_detection_response_t filter2_val = SOBEL_FILTER_2[i][j];
+            edge_detection_response_t filter3_val = SOBEL_FILTER_3[i][j];
+            response0 += window_val * filter0_val;
+            response1 += window_val * filter1_val;
+            response2 += window_val * filter2_val;
+            response3 += window_val * filter3_val;
         }
     }
 

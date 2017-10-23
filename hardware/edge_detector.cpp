@@ -34,7 +34,6 @@ void edge_detector(pixel_stream_t& rgba_image, edge_detection_stream_t& edges) {
     // Convert the image to grayscale, and duplicate the stream
     grayscale_stream_t gray_image;
     grayscale(rgba_image, gray_image);
-
     edge_detection<IMAGE_WIDTH, IMAGE_HEIGHT>(gray_image, edges);
 
     return;

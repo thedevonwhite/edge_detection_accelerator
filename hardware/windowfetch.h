@@ -67,9 +67,9 @@ struct window_pipeline {
 
         IN_T rowbuffer[KERNEL_HEIGHT][IMAGE_WIDTH];
         IN_T window[KERNEL_HEIGHT][KERNEL_WIDTH];
-        #pragma HLS DEPENDENCE variable=rowbuffer inter RAW false
-        #pragma HLS DEPENDENCE variable=window inter RAW false
         #pragma HLS ARRAY_PARTITION variable=window complete
+		#pragma HLS DEPENDENCE variable=rowbuffer inter RAW false
+		#pragma HLS DEPENDENCE variable=window inter RAW false
 
         pixel_op: for (int in_pointer = 0; in_pointer < IMAGE_WIDTH * IMAGE_HEIGHT + offset; in_pointer++) {
         #pragma HLS PIPELINE II=1
@@ -82,8 +82,8 @@ struct window_pipeline {
 
             //Window Forming:
             //If we have loaded in KERNEL_HEIGHT-1 full rows, we can load columns into the window
-            col_to_window: if (in_pointer >= (KERNEL_HEIGHT-1)*IMAGE_WIDTH) {
-                for (int i = 0; i < KERNEL_HEIGHT; i++) {
+            if (in_pointer >= (KERNEL_HEIGHT-1)*IMAGE_WIDTH) {
+            	col_to_window: for (int i = 0; i < KERNEL_HEIGHT; i++) {
                     window[i][tail_win] = rowbuffer[i][tail_col]; //When i == tail_col we should really be forwarding, not loading again
                 }
             }
